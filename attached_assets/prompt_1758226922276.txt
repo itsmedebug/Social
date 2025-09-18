@@ -1,0 +1,108 @@
+{
+  "project_name": "pragyan chakra",
+  "description": "Frontend-only prototype for a citizen-based ocean hazard reporting platform. Features social-media style feed, map with geotags, dummy reports, and media uploads.",
+  "frontend": {
+    "framework": "React",
+    "styling": "Tailwind CSS",
+    "components": [
+      {
+        "name": "Header",
+        "description": "Top navigation bar with app name, user profile icon, and notifications."
+      },
+      {
+        "name": "Sidebar",
+        "description": "Left sidebar with navigation links: Home, Map, Reports, Social Media Feed, Profile."
+      },
+      {
+        "name": "Feed",
+        "description": "Central feed showing user-submitted hazard reports. Each post includes username, timestamp, description, media (image/video), geotag coordinates, and like/comment icons.",
+        "features": [
+          "Dummy posts stored in a JSON array",
+          "Display image or video",
+          "Show location coordinates"
+        ]
+      },
+      {
+        "name": "UploadForm",
+        "description": "Form to submit new hazard reports (frontend only). Fields: description, media upload (image/video), current location (dummy geotag), submit button.",
+        "features": [
+          "Prevent gallery upload (optional: only camera capture simulation)",
+          "Display preview of uploaded media",
+          "Generate random coordinates if geolocation not available"
+        ]
+      },
+      {
+        "name": "Map",
+        "description": "Interactive map showing geotagged hazard reports.",
+        "features": [
+          "Use OpenWeather map tiles or Leaflet.js",
+          "Place markers for each dummy report",
+          "Show report info on marker click (description + media preview)"
+        ]
+      },
+      {
+        "name": "SocialFeed",
+        "description": "Simulated social media posts related to ocean hazards.",
+        "features": [
+          "Display posts from multiple sources (Twitter, YouTube, Reddit) as dummy data",
+          "Show username, post time, description, media, sentiment icon (positive/neutral/negative)"
+        ]
+      },
+      {
+        "name": "Footer",
+        "description": "Footer with copyright and support links."
+      }
+    ],
+    "sample_data": {
+      "users": [
+        {"id": 1, "name": "Alice", "profilePic": "alice.jpg"},
+        {"id": 2, "name": "Bob", "profilePic": "bob.jpg"}
+      ],
+      "reports": [
+        {
+          "id": 101,
+          "username": "Alice",
+          "timestamp": "2025-09-19T10:30:00",
+          "description": "High waves near Marina Beach, Chennai.",
+          "media": "wave1.jpg",
+          "coordinates": {"lat": 13.045, "lon": 80.273},
+          "verified": true
+        },
+        {
+          "id": 102,
+          "username": "Bob",
+          "timestamp": "2025-09-19T11:00:00",
+          "description": "Flooding in low-lying area near Kochi port.",
+          "media": "flood1.jpg",
+          "coordinates": {"lat": 9.931, "lon": 76.267},
+          "verified": false
+        }
+      ],
+      "socialPosts": [
+        {
+          "id": 201,
+          "platform": "Twitter",
+          "username": "@OceanWatcher",
+          "timestamp": "2025-09-19T09:45:00",
+          "description": "Tsunami warning in Bay of Bengal. Stay safe!",
+          "media": "tsunami_alert.jpg",
+          "sentiment": "alert"
+        }
+      ]
+    }
+  },
+  "functionality": [
+    "Frontend-only: no backend or database required",
+    "All data stored as JSON or state variables",
+    "Responsive design for desktop and mobile",
+    "Dummy map markers and feed posts",
+    "Interactive UI elements like buttons, hover effects, modals"
+  ],
+  "goals_for_demo": [
+    "Show feed of hazard reports",
+    "Show interactive map with geotags",
+    "Simulate post uploads",
+    "Show social media hazard posts",
+    "Simple, clean, familiar social media interface"
+  ]
+}
