@@ -6,8 +6,14 @@ import Map from "@/components/Map";
 import SocialFeed from "@/components/SocialFeed";
 import Footer from "@/components/Footer";
 import MobileNav from "@/components/MobileNav";
+import UserDashboard from "@/components/UserDashboard";
+import AuthorityDashboard from "@/components/AuthorityDashboard";
+import VolunteerDashboard from "@/components/VolunteerDashboard";
 
-type ViewType = "home" | "map" | "reports" | "social" | "profile";
+type ViewType = "home" | "map" | "reports" | "social" | "profile" | "user-dashboard" | "authority-dashboard" | "volunteer-dashboard";
+
+// Mock user role - in a real app this would come from auth context
+const CURRENT_USER_ROLE = "volunteer"; // Can be "user", "authority", or "volunteer"
 
 export default function Home() {
   const [currentView, setCurrentView] = useState<ViewType>("home");
@@ -22,7 +28,8 @@ export default function Home() {
       <div className="flex max-w-7xl mx-auto">
         <Sidebar 
           currentView={currentView} 
-          onNavigate={setCurrentView} 
+          onNavigate={setCurrentView}
+          userRole={CURRENT_USER_ROLE}
         />
         
         <main className="flex-1 min-w-0">
@@ -32,6 +39,9 @@ export default function Home() {
             {currentView === "social" && <SocialFeed />}
             {currentView === "reports" && <Feed />}
             {currentView === "profile" && <Feed />}
+            {currentView === "user-dashboard" && <UserDashboard />}
+            {currentView === "authority-dashboard" && <AuthorityDashboard />}
+            {currentView === "volunteer-dashboard" && <VolunteerDashboard />}
           </div>
         </main>
 
@@ -135,6 +145,7 @@ export default function Home() {
           setCurrentView(view);
           setIsMobileNavOpen(false);
         }}
+        userRole={CURRENT_USER_ROLE}
       />
 
       {/* Floating Action Button */}
