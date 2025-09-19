@@ -2,15 +2,32 @@ import { type User, type InsertUser, type HazardReport, type InsertHazardReport,
 import { randomUUID } from "crypto";
 
 export interface IStorage {
+  // User management
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  getUsersByRole(role: string): Promise<User[]>;
+  
+  // Hazard reports
   getAllHazardReports(): Promise<HazardReport[]>;
   getHazardReport(id: string): Promise<HazardReport | undefined>;
   createHazardReport(report: InsertHazardReport): Promise<HazardReport>;
+  getHazardReportsByUrgency(minUrgency: number): Promise<HazardReport[]>;
+  getHazardReportsByTrustScore(minTrust: number): Promise<HazardReport[]>;
+  getUnreviewedReports(): Promise<HazardReport[]>;
+  getReportsAssignedToVolunteer(volunteerId: string): Promise<HazardReport[]>;
+  assignVolunteerToReport(reportId: string, volunteerId: string): Promise<HazardReport | undefined>;
+  updateReportTrustScore(reportId: string, trustScore: number): Promise<HazardReport | undefined>;
+  updateReportUrgencyScore(reportId: string, urgencyScore: number): Promise<HazardReport | undefined>;
+  markReportAsReviewed(reportId: string): Promise<HazardReport | undefined>;
+  
+  // Social posts
   getAllSocialPosts(): Promise<SocialPost[]>;
   getSocialPost(id: string): Promise<SocialPost | undefined>;
   createSocialPost(post: InsertSocialPost): Promise<SocialPost>;
+  getSocialPostsByUrgency(minUrgency: number): Promise<SocialPost[]>;
+  getSocialPostsByTrustScore(minTrust: number): Promise<SocialPost[]>;
+  getGeoTaggedPosts(): Promise<SocialPost[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -268,6 +285,98 @@ export class MemStorage implements IStorage {
     };
     this.socialPosts.set(id, post);
     return post;
+  }
+
+  // User management methods
+  async getUsersByRole(role: string): Promise<User[]> {
+    return Array.from(this.users.values()).filter(user => user.role === role);
+  }
+
+  // Hazard report filtering and management methods
+  async getHazardReportsByUrgency(minUrgency: number): Promise<HazardReport[]> {
+    return Array.from(this.hazardReports.values())
+      .filter(report => report.urgencyScore && report.urgencyScore >= minUrgency)
+      .sort((a, b) => (b.urgencyScore || 0) - (a.urgencyScore || 0));
+  }
+
+  async getHazardReportsByTrustScore(minTrust: number): Promise<HazardReport[]> {
+    return Array.from(this.hazardReports.values())
+      .filter(report => report.trustScore && report.trustScore >= minTrust)
+      .sort((a, b) => (b.trustScore || 0) - (a.trustScore || 0));
+  }
+
+  async getUnreviewedReports(): Promise<HazardReport[]> {
+    return Array.from(this.hazardReports.values())
+      .filter(report => !report.authorityReviewed)
+      .sort((a, b) => (b.urgencyScore || 0) - (a.urgencyScore || 0));
+  }
+
+  async getReportsAssignedToVolunteer(volunteerId: string): Promise<HazardReport[]> {
+    return Array.from(this.hazardReports.values())
+      .filter(report => report.assignedVolunteers && report.assignedVolunteers.includes(volunteerId))
+      .sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
+  }
+
+  async assignVolunteerToReport(reportId: string, volunteerId: string): Promise<HazardReport | undefined> {
+    const report = this.hazardReports.get(reportId);
+    if (report) {
+      const assignedVolunteers = report.assignedVolunteers || [];
+      if (!assignedVolunteers.includes(volunteerId)) {
+        report.assignedVolunteers = [...assignedVolunteers, volunteerId];
+        this.hazardReports.set(reportId, report);
+      }
+      return report;
+    }
+    return undefined;
+  }
+
+  async updateReportTrustScore(reportId: string, trustScore: number): Promise<HazardReport | undefined> {
+    const report = this.hazardReports.get(reportId);
+    if (report) {
+      report.trustScore = trustScore;
+      this.hazardReports.set(reportId, report);
+      return report;
+    }
+    return undefined;
+  }
+
+  async updateReportUrgencyScore(reportId: string, urgencyScore: number): Promise<HazardReport | undefined> {
+    const report = this.hazardReports.get(reportId);
+    if (report) {
+      report.urgencyScore = urgencyScore;
+      this.hazardReports.set(reportId, report);
+      return report;
+    }
+    return undefined;
+  }
+
+  async markReportAsReviewed(reportId: string): Promise<HazardReport | undefined> {
+    const report = this.hazardReports.get(reportId);
+    if (report) {
+      report.authorityReviewed = true;
+      this.hazardReports.set(reportId, report);
+      return report;
+    }
+    return undefined;
+  }
+
+  // Social post filtering methods
+  async getSocialPostsByUrgency(minUrgency: number): Promise<SocialPost[]> {
+    return Array.from(this.socialPosts.values())
+      .filter(post => post.urgencyScore && post.urgencyScore >= minUrgency)
+      .sort((a, b) => (b.urgencyScore || 0) - (a.urgencyScore || 0));
+  }
+
+  async getSocialPostsByTrustScore(minTrust: number): Promise<SocialPost[]> {
+    return Array.from(this.socialPosts.values())
+      .filter(post => post.trustScore && post.trustScore >= minTrust)
+      .sort((a, b) => (b.trustScore || 0) - (a.trustScore || 0));
+  }
+
+  async getGeoTaggedPosts(): Promise<SocialPost[]> {
+    return Array.from(this.socialPosts.values())
+      .filter(post => post.geoTagged && post.latitude && post.longitude)
+      .sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
   }
 }
 
