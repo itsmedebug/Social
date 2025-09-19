@@ -244,12 +244,12 @@ export class MemStorage implements IStorage {
       media: insertReport.media ?? null,
       mediaType: insertReport.mediaType ?? null,
       location: insertReport.location ?? null,
-      riskLevel: insertReport.riskLevel ?? null,
-      geoTagged: insertReport.geoTagged ?? null,
-      urgencyScore: insertReport.urgencyScore ?? null,
-      trustScore: insertReport.trustScore ?? null,
-      assignedVolunteers: insertReport.assignedVolunteers ?? null,
-      authorityReviewed: insertReport.authorityReviewed ?? null
+      riskLevel: insertReport.riskLevel ?? "medium",
+      geoTagged: insertReport.geoTagged ?? true,
+      urgencyScore: insertReport.urgencyScore ?? 5,
+      trustScore: insertReport.trustScore ?? 5,
+      assignedVolunteers: insertReport.assignedVolunteers ?? [],
+      authorityReviewed: insertReport.authorityReviewed ?? false
     };
     this.hazardReports.set(id, report);
     return report;
@@ -272,16 +272,16 @@ export class MemStorage implements IStorage {
       id, 
       createdAt: new Date(),
       media: insertPost.media ?? null,
-      likes: insertPost.likes ?? null,
-      comments: insertPost.comments ?? null,
-      shares: insertPost.shares ?? null,
+      likes: insertPost.likes ?? 0,
+      comments: insertPost.comments ?? 0,
+      shares: insertPost.shares ?? 0,
       views: insertPost.views ?? null,
       latitude: insertPost.latitude ?? null,
       longitude: insertPost.longitude ?? null,
       location: insertPost.location ?? null,
-      geoTagged: insertPost.geoTagged ?? null,
-      trustScore: insertPost.trustScore ?? null,
-      urgencyScore: insertPost.urgencyScore ?? null
+      geoTagged: insertPost.geoTagged ?? false,
+      trustScore: insertPost.trustScore ?? 5,
+      urgencyScore: insertPost.urgencyScore ?? 3
     };
     this.socialPosts.set(id, post);
     return post;
@@ -375,7 +375,7 @@ export class MemStorage implements IStorage {
 
   async getGeoTaggedPosts(): Promise<SocialPost[]> {
     return Array.from(this.socialPosts.values())
-      .filter(post => post.geoTagged && post.latitude && post.longitude)
+      .filter(post => post.geoTagged && post.latitude !== null && post.longitude !== null)
       .sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
   }
 }
