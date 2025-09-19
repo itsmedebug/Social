@@ -37,6 +37,9 @@ export class MemStorage implements IStorage {
         profilePic: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&h=100",
         verified: true,
         communityPoints: 245,
+        role: "user",
+        organizationId: null,
+        jurisdiction: null,
       },
       {
         id: "user-2",
@@ -45,6 +48,20 @@ export class MemStorage implements IStorage {
         profilePic: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&h=100",
         verified: false,
         communityPoints: 180,
+        role: "volunteer",
+        organizationId: "vols-india-1",
+        jurisdiction: "Tamil Nadu",
+      },
+      {
+        id: "user-3",
+        username: "Captain Sarah Nair",
+        password: "password",
+        profilePic: "https://images.unsplash.com/photo-1594736797933-d0a5ba1cdeed?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&h=100",
+        verified: true,
+        communityPoints: 850,
+        role: "authority",
+        organizationId: "coast-guard-india",
+        jurisdiction: "Western Coast",
       }
     ];
 
@@ -62,10 +79,15 @@ export class MemStorage implements IStorage {
         latitude: 13.045,
         longitude: 80.273,
         location: "Marina Beach, Chennai",
+        geoTagged: true,
         verified: true,
         riskLevel: "high",
+        urgencyScore: 8.5,
+        trustScore: 9.2,
         likes: 24,
         comments: 8,
+        assignedVolunteers: ["user-2"],
+        authorityReviewed: true,
         createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
       },
       {
@@ -78,10 +100,15 @@ export class MemStorage implements IStorage {
         latitude: 9.931,
         longitude: 76.267,
         location: "Fort Kochi, Kerala",
+        geoTagged: true,
         verified: false,
         riskLevel: "critical",
+        urgencyScore: 9.8,
+        trustScore: 7.1,
         likes: 18,
         comments: 12,
+        assignedVolunteers: [],
+        authorityReviewed: false,
         createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
       }
     ];
@@ -97,6 +124,12 @@ export class MemStorage implements IStorage {
         description: "🌊 TSUNAMI WARNING: Bay of Bengal - Magnitude 7.2 earthquake detected. Coastal areas from Tamil Nadu to Andhra Pradesh should prepare for evacuation if needed. Stay tuned for official updates. #TsunamiAlert #BayOfBengal",
         media: "https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=300",
         sentiment: "alert",
+        latitude: 13.0827,
+        longitude: 80.2707,
+        location: "Bay of Bengal, Tamil Nadu",
+        geoTagged: true,
+        trustScore: 9.5,
+        urgencyScore: 10.0,
         likes: 1200,
         shares: 856,
         comments: 234,
@@ -110,6 +143,12 @@ export class MemStorage implements IStorage {
         description: "📊 Weekly Ocean Conditions Report - Indian Ocean | Storm systems tracking, wave heights, and fishing safety guidelines for coastal regions",
         media: "https://images.unsplash.com/photo-1551244072-5d12893278ab?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=300",
         sentiment: "neutral",
+        latitude: null,
+        longitude: null,
+        location: null,
+        geoTagged: false,
+        trustScore: 8.7,
+        urgencyScore: 4.0,
         likes: 892,
         shares: 0,
         comments: 67,
@@ -123,6 +162,12 @@ export class MemStorage implements IStorage {
         description: "🐠 Amazing recovery of coral reefs near Lakshadweep! Water quality has improved significantly over the past year. Great news for marine biodiversity and fishing communities.",
         media: "https://images.unsplash.com/photo-1583212292454-1fe6229603b7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=300",
         sentiment: "positive",
+        latitude: 10.5667,
+        longitude: 72.6417,
+        location: "Lakshadweep Islands",
+        geoTagged: true,
+        trustScore: 7.8,
+        urgencyScore: 2.0,
         likes: 847,
         shares: 23,
         comments: 156,
@@ -151,7 +196,10 @@ export class MemStorage implements IStorage {
       id,
       profilePic: insertUser.profilePic ?? null,
       verified: insertUser.verified ?? null,
-      communityPoints: insertUser.communityPoints ?? null
+      communityPoints: insertUser.communityPoints ?? null,
+      role: insertUser.role ?? null,
+      organizationId: insertUser.organizationId ?? null,
+      jurisdiction: insertUser.jurisdiction ?? null
     };
     this.users.set(id, user);
     return user;
@@ -179,7 +227,12 @@ export class MemStorage implements IStorage {
       media: insertReport.media ?? null,
       mediaType: insertReport.mediaType ?? null,
       location: insertReport.location ?? null,
-      riskLevel: insertReport.riskLevel ?? null
+      riskLevel: insertReport.riskLevel ?? null,
+      geoTagged: insertReport.geoTagged ?? null,
+      urgencyScore: insertReport.urgencyScore ?? null,
+      trustScore: insertReport.trustScore ?? null,
+      assignedVolunteers: insertReport.assignedVolunteers ?? null,
+      authorityReviewed: insertReport.authorityReviewed ?? null
     };
     this.hazardReports.set(id, report);
     return report;
@@ -205,7 +258,13 @@ export class MemStorage implements IStorage {
       likes: insertPost.likes ?? null,
       comments: insertPost.comments ?? null,
       shares: insertPost.shares ?? null,
-      views: insertPost.views ?? null
+      views: insertPost.views ?? null,
+      latitude: insertPost.latitude ?? null,
+      longitude: insertPost.longitude ?? null,
+      location: insertPost.location ?? null,
+      geoTagged: insertPost.geoTagged ?? null,
+      trustScore: insertPost.trustScore ?? null,
+      urgencyScore: insertPost.urgencyScore ?? null
     };
     this.socialPosts.set(id, post);
     return post;
