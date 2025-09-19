@@ -2,17 +2,32 @@ interface MobileNavProps {
   isOpen: boolean;
   onClose: () => void;
   currentView: string;
-  onNavigate: (view: "home" | "map" | "reports" | "social" | "profile") => void;
+  onNavigate: (view: "home" | "map" | "reports" | "social" | "profile" | "user-dashboard" | "authority-dashboard" | "volunteer-dashboard") => void;
+  userRole: "user" | "authority" | "volunteer";
 }
 
-export default function MobileNav({ isOpen, onClose, currentView, onNavigate }: MobileNavProps) {
-  const navItems = [
+export default function MobileNav({ isOpen, onClose, currentView, onNavigate, userRole }: MobileNavProps) {
+  const baseNavItems = [
     { id: "home", label: "Home", icon: "fas fa-home" },
     { id: "map", label: "Interactive Map", icon: "fas fa-map-marked-alt" },
     { id: "reports", label: "My Reports", icon: "fas fa-exclamation-triangle" },
     { id: "social", label: "Social Feed", icon: "fab fa-twitter" },
     { id: "profile", label: "Profile", icon: "fas fa-user" },
   ];
+
+  const dashboardNavItems = {
+    user: [
+      { id: "user-dashboard", label: "My Dashboard", icon: "fas fa-tachometer-alt" },
+    ],
+    authority: [
+      { id: "authority-dashboard", label: "Authority Dashboard", icon: "fas fa-shield-alt" },
+    ],
+    volunteer: [
+      { id: "volunteer-dashboard", label: "Volunteer Dashboard", icon: "fas fa-hands-helping" },
+    ],
+  };
+
+  const navItems = [...baseNavItems, ...dashboardNavItems[userRole]];
 
   if (!isOpen) return null;
 
